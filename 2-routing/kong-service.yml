@@ -1,0 +1,23 @@
+_format_version: "2.1"
+_transform: true
+
+services:
+- name: dispatcher
+  url: http://broker-ingress.knative-eventing.svc.cluster.local/default/dispatcher
+  routes:
+  
+  - name: bar-route
+    paths:
+    - /bar
+    plugins:
+    - name: ce-plugin
+      config:
+        eventType: io.triggermesh.flow.bar
+
+  - name: foo-route
+    paths:
+    - /foo
+    plugins:
+    - name: ce-plugin
+      config:
+        eventType: io.triggermesh.flow.foo

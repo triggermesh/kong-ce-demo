@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ibm-mq-server
+spec:
+  selector:
+    matchLabels:
+      app: ibm-mq-server
+  template:
+    metadata:
+      labels:
+        app: ibm-mq-server
+    spec:
+      containers:
+      - name: user-container
+        env:
+        - name: LICENSE
+          value: accept
+        - name: MQ_QMGR_NAME
+          value: QM1
+        - name: MQ_APP_PASSWORD
+          value: mq-app-password
+        image: ibmcom/mq@sha256:ac44cdf670864fbff36d9a8a416df1cadda2930b01f6904123cf14e6067ed11b
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ibm-mq
+spec:
+  selector:
+    app: ibm-mq-server
+  type: ClusterIP
+  ports:
+  - name: mq
+    port: 1414
+    protocol: TCP
+    targetPort: 1414
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ibm-mq-secret
+data:
+  username: YXBw
+  password: bXEtYXBwLXBhc3N3b3Jk
+type: Opaque

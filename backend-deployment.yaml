@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: synchronous-backend
+spec:
+  selector:
+    matchLabels:
+      app: synchronous-backend
+  template:
+    metadata:
+      labels:
+        app: synchronous-backend
+    spec:
+      containers:
+      - name: user-container
+        image: docker.io/tzununbekov/sync-backend:test
+        # image: docker.io/tzununbekov/synchronous-backend@sha256:b170466e095d822595da732529794fe7db8060058a4cdbada13b7c0376afc835
+        env:
+        - name: MQ_INPUT_QUEUE
+          value: DEV.QUEUE.1
+        volumeMounts:
+          - mountPath: /opt/mqm/config/
+            name: mq-jms-credentials
+            readOnly: true
+      volumes:
+        - name: mq-jms-credentials
+          secret:
+            secretName: mq-jms-credentials
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mq-jms-credentials
+data:
+  applicationApiKey.json: ewogICJtcVVzZXJuYW1lIjoiYXBwIiwKICAiYXBpS2V5IjoibXEtYXBwLXBhc3N3b3JkIgp9Cg==
+  connection_info.json: ewogICAgInF1ZXVlTWFuYWdlck5hbWUiOiAiUU0xIiwKICAgICJob3N0bmFtZSI6ICJpYm0tbXEuZGVmYXVsdC5zdmMuY2x1c3Rlci5sb2NhbCIsCiAgICAibGlzdGVuZXJQb3J0IjogMTQxNCwKICAgICJhcHBsaWNhdGlvbkNoYW5uZWxOYW1lIjogIkRFVi5BUFAuU1ZSQ09OTiIsCiAgICAiYXBwbGljYXRpb25OYW1lIjogInN5bmNocm9ub3VzLWJhY2tlbmQiCn0K

@@ -1,0 +1,33 @@
+_format_version: "2.1"
+_transform: true
+
+services:
+- name: dispatcher
+  url: http://synchronizer-input-channel.default.svc.cluster.local
+  routes:
+  
+  - name: bar-route
+    paths:
+    - /bar
+    plugins:
+    - name: ce-plugin
+      config:
+        eventType: io.triggermesh.flow.bar
+    - name: request-transformer
+      config:
+        add:
+          body:
+          - route:bar
+
+  - name: foo-route
+    paths:
+    - /foo
+    plugins:
+    - name: ce-plugin
+      config:
+        eventType: io.triggermesh.flow.foo
+    - name: request-transformer
+      config:
+        add:
+          body:
+          - route:foo
