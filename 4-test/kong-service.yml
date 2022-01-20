@@ -3,29 +3,34 @@ _transform: true
 
 plugins:
 - name: ce-plugin
-  service: dispatcher
 
 services:
-- name: dispatcher
+- name: sockeye
+  url: http://sockeye.default.svc.cluster.local
+  routes:
+  - name: sockeye-route
+    paths:
+    - /sockeye
+    plugins:
+    - name: request-transformer
+      config:
+        add:
+          body:
+          - destination:sockeye
+
+- name: mq
   url: http://synchronizer-input-channel.default.svc.cluster.local
   routes:
-  
-  - name: bar-route
+  - name: ibm-mq-route
     paths:
-    - /bar
+    - /mq
     plugins:
-    - name: request-transformer
-      config:
-        add:
-          body:
-          - route:bar
+    - name: pre-function
+      config: 
+        access:
+        - |2
+            local content_type = kong.request.get_header("Content-Type")
 
-  - name: foo-route
-    paths:
-    - /foo
-    plugins:
-    - name: request-transformer
-      config:
-        add:
-          body:
-          - route:foo
+            if content_type ~= "application/json" then
+              return kong.response.exit(400, "Invalid Content-Type")
+            end

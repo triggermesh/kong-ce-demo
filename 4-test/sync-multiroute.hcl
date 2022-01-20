@@ -23,6 +23,12 @@ source ibmmq "output_channel" {
   queue_manager = "QM1"
   queue_name = "DEV.QUEUE.2"
   channel_name = "DEV.APP.SVRCONN"
+  delivery {
+    dead_letter_queue = "DEAD.LETTER.QUEUE"
+    retry = 3
+  }
 
   to = target.input_channel
 }
+
+target sockeye "sockeye" {}
